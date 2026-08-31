@@ -1,5 +1,16 @@
 {
-  "rewrites": [
-    { "source": "/photo.jpg", "destination": "/index.html" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/grabber.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    { "src": "/api/grabber", "dest": "/api/grabber.py" }
   ]
 }
